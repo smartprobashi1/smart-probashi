@@ -1,0 +1,4 @@
+node_modules/
+env
+nest
+DS_Store
