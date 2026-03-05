@@ -1,3 +1,5 @@
+ 'use client';
+
 import { useFinanceStore } from '@/store/financeStore';
 import { formatCurrency } from '@/lib/currency';
 

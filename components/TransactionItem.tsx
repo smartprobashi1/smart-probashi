@@ -1,18 +1,19 @@
 import type { Expense, Income } from '@/types/finance';
 import { formatCurrency } from '@/lib/currency';
 
-type Props =
-  | { type: 'income'; item: Income }
-  | { type: 'expense'; item: Expense };
+type IncomeProps = { type: 'income'; item: Income };
+type ExpenseProps = { type: 'expense'; item: Expense };
+type Props = IncomeProps | ExpenseProps;
 
 export function TransactionItem(props: Props) {
-  const { item } = props;
   const isIncome = props.type === 'income';
   const sign = isIncome ? '+' : '-';
   const color = isIncome ? 'text-green-600' : 'text-red-600';
 
+  const item = isIncome ? (props.item as Income) : (props.item as Expense);
+
   const amountLabel = formatCurrency(item.amount, item.currency);
-  const title = isIncome ? item.source : item.category;
+  const title = isIncome ? (item as Income).source : (item as Expense).category;
   const subtitle = new Date(item.date).toLocaleDateString();
 
   return (
@@ -33,4 +34,5 @@ export function TransactionItem(props: Props) {
     </div>
   );
 }
+
 

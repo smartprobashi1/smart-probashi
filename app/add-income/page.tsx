@@ -6,33 +6,42 @@ import BottomNav from "../components/BottomNavbar";
 import { Input, TextArea } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { useFinanceStore } from "@/store/financeStore";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { incomeSchema, type IncomeFormValues } from "@/lib/validation";
 
 export default function AddIncomePage() {
-  const [amount, setAmount] = useState("");
-  const [source, setSource] = useState("");
-  const [date, setDate] = useState("");
-  const [note, setNote] = useState("");
+  const addIncome = useFinanceStore((s) => s.addIncome);
   const [submitted, setSubmitted] = useState(false);
-   const addIncome = useFinanceStore((s) => s.addIncome);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const value = parseFloat(amount);
-    if (Number.isNaN(value) || value <= 0) return;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<IncomeFormValues>({
+    resolver: zodResolver(incomeSchema),
+    defaultValues: {
+      amount: 0,
+      source: "",
+      date: "",
+      note: "",
+    },
+  });
+
+  const onSubmit = (values: IncomeFormValues) => {
+    const date = values.date || new Date().toISOString().slice(0, 10);
 
     addIncome({
-      amount: value,
-      source,
-      date: date || new Date().toISOString(),
-      note,
+      amount: values.amount,
+      source: values.source,
+      date,
+      note: values.note,
     });
 
     setSubmitted(true);
-    setAmount("");
-    setSource("");
-    setDate("");
-    setNote("");
-  }
+    reset();
+  };
 
   return (
     <>
@@ -40,48 +49,46 @@ export default function AddIncomePage() {
       <main className="flex-1 px-4 py-4 pb-20">
         <h1 className="text-sm font-semibold mb-3">Add Income</h1>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           className="bg-white rounded-2xl border border-slate-200 px-4 py-4 space-y-3"
         >
           <Input
             label="Amount"
             type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            {...register("amount", { valueAsNumber: true })}
             placeholder="e.g. 3000"
             required
+            error={errors.amount?.message}
           />
 
           <Input
             label="Source"
             type="text"
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
+            {...register("source")}
             placeholder="Salary, bonus, etc."
             required
+            error={errors.source?.message}
           />
 
           <Input
             label="Date"
             type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
+            {...register("date")}
           />
 
           <TextArea
             label="Note (optional)"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
+            {...register("note")}
             placeholder="Add any details..."
+            error={errors.note?.message}
           />
 
-          <Button type="submit" fullWidth className="mt-2">
-            Save Income
+          <Button type="submit" fullWidth className="mt-2" disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save Income"}
           </Button>
 
-          {submitted && (
-            <p className="text-[11px] text-green-600 mt-2 text-[11px]">
+          {submitted && !isSubmitting && (
+            <p className="text-[11px] text-green-600 mt-2">
               Income saved locally.
             </p>
           )}

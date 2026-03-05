@@ -1,3 +1,5 @@
+ "use client";
+
 import Link from "next/link";
 import { BalanceCard } from "@/components/BalanceCard";
 import { useFinanceStore } from "@/store/financeStore";
