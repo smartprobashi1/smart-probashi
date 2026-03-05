@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* You can add any custom base styles here */
+body {
+  @apply bg-background text-gray-900 dark:bg-slate-950 dark:text-slate-50;
+}
+
+.text-muted {
+  @apply text-muted;
+}

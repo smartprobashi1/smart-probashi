@@ -1,22 +1,28 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
+  darkMode: 'class',
   content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}"
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
-        primary: "#2563EB",
-        primarySoft: "#DBEAFE",
-        accent: "#F97316",
-        muted: "#6B7280",
-        background: "#F9FAFB"
+        primary: '#1E4A6F',
+        primarySoft: '#D3E2F2',
+        secondary: '#F5A623',
+        accent: '#0F766E',
+        muted: '#6B7280',
+        background: '#F9FAFB',
+      },
+      boxShadow: {
+        'soft-card': '0 10px 25px rgba(15, 23, 42, 0.08)',
       },
       borderRadius: {
-        xl: "1rem"
-      }
-    }
+        '2xl': '1.25rem',
+      },
+    },
   },
-  plugins: []
-};
+  plugins: [],
+}

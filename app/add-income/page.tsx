@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import TopBar from "../components/TopBar";
-import BottomNav from "../components/BottomNav";
+import TopBar from "../components/Header";
+import BottomNav from "../components/BottomNavbar";
+import { Input, TextArea } from "@/components/Input";
+import { Button } from "@/components/Button";
+import { useFinanceStore } from "@/store/financeStore";
 
 export default function AddIncomePage() {
   const [amount, setAmount] = useState("");
@@ -10,76 +13,76 @@ export default function AddIncomePage() {
   const [date, setDate] = useState("");
   const [note, setNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
+   const addIncome = useFinanceStore((s) => s.addIncome);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const value = parseFloat(amount);
+    if (Number.isNaN(value) || value <= 0) return;
+
+    addIncome({
+      amount: value,
+      source,
+      date: date || new Date().toISOString(),
+      note,
+    });
+
     setSubmitted(true);
+    setAmount("");
+    setSource("");
+    setDate("");
+    setNote("");
   }
 
   return (
     <>
       <TopBar />
-      <main className="flex-1 px-4 py-4">
+      <main className="flex-1 px-4 py-4 pb-20">
         <h1 className="text-sm font-semibold mb-3">Add Income</h1>
         <form
           onSubmit={handleSubmit}
           className="bg-white rounded-2xl border border-slate-200 px-4 py-4 space-y-3"
         >
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] text-muted">Amount (SAR)</label>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="e.g. 3000"
-              required
-            />
-          </div>
+          <Input
+            label="Amount"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="e.g. 3000"
+            required
+          />
 
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] text-muted">Source</label>
-            <input
-              type="text"
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="Salary, bonus, etc."
-              required
-            />
-          </div>
+          <Input
+            label="Source"
+            type="text"
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            placeholder="Salary, bonus, etc."
+            required
+          />
 
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] text-muted">Date</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-              required
-            />
-          </div>
+          <Input
+            label="Date"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
 
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] text-muted">Note (optional)</label>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary min-h-[70px]"
-              placeholder="Add any details..."
-            />
-          </div>
+          <TextArea
+            label="Note (optional)"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Add any details..."
+          />
 
-          <button
-            type="submit"
-            className="w-full bg-primary text-white text-sm font-semibold py-2.5 rounded-xl mt-2"
-          >
+          <Button type="submit" fullWidth className="mt-2">
             Save Income
-          </button>
+          </Button>
 
           {submitted && (
-            <p className="text-[11px] text-green-600 mt-2">
-              Income saved (placeholder). Connect backend later.
+            <p className="text-[11px] text-green-600 mt-2 text-[11px]">
+              Income saved locally.
             </p>
           )}
         </form>

@@ -1,12 +1,25 @@
 import Link from "next/link";
+import { BalanceCard } from "@/components/BalanceCard";
+import { useFinanceStore } from "@/store/financeStore";
 
 export default function HomePage() {
+  const profile = useFinanceStore((s) => s.profile);
+
   return (
-    <main className="flex-1 flex flex-col justify-between px-4 py-6">
+    <main className="flex-1 flex flex-col justify-between px-4 py-6 gap-6">
       <div>
         <h1 className="text-2xl font-semibold mb-2">Smart Probashi</h1>
-        <p className="text-sm text-muted mb-6">
-          Track your income, expenses, and goals as an overseas worker.
+        <p className="text-sm text-muted mb-4">
+          Track your income, expenses, and savings as an overseas worker.
+        </p>
+
+        <div className="mb-4">
+          <BalanceCard />
+        </div>
+
+        <p className="text-[12px] text-muted mb-4">
+          Logged in as <span className="font-semibold">{profile.name}</span> in{" "}
+          {profile.country}.
         </p>
 
         <div className="space-y-3">
@@ -45,3 +58,4 @@ export default function HomePage() {
     </main>
   );
 }
+

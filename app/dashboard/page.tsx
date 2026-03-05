@@ -1,48 +1,26 @@
 "use client";
 
-import TopBar from "../components/TopBar";
-import BottomNav from "../components/BottomNav";
-import SummaryCard from "../components/SummaryCard";
-import StatPill from "../components/StatPill";
-import TransactionItem from "../components/TransactionItem";
+import TopBar from "../components/Header";
+import BottomNav from "../components/BottomNavbar";
 import Link from "next/link";
+import { BalanceCard } from "@/components/BalanceCard";
+import { AnalyticsBar } from "@/components/AnalyticsBar";
+import { useFinanceStore } from "@/store/financeStore";
+import { TransactionItem } from "@/components/TransactionItem";
 
-export default function dashboardPage() {
-  const recent = [
-    {
-      title: "Salary - KSA",
-      category: "Income",
-      amount: "3,000 SAR",
-      type: "income" as const
-    },
-    {
-      title: "Family Remittance",
-      category: "Expense",
-      amount: "1,200 SAR",
-      type: "expense" as const
-    },
-    {
-      title: "Food & Groceries",
-      category: "Expense",
-      amount: "350 SAR",
-      type: "expense" as const
-    }
-  ];
+export default function DashboardPage() {
+  const incomes = useFinanceStore((s) => s.incomes);
+  const expenses = useFinanceStore((s) => s.expenses);
+
+  const recent = [...incomes.map((i) => ({ type: "income" as const, item: i })), ...expenses.map((e) => ({ type: "expense" as const, item: e }))]
+    .sort((a, b) => new Date(b.item.date).getTime() - new Date(a.item.date).getTime())
+    .slice(0, 5);
 
   return (
     <>
       <TopBar />
-      <main className="flex-1 flex flex-col px-4 py-4 gap-4">
-        <SummaryCard
-          title="Net balance"
-          amount="1,450 SAR"
-          subtitle="After income & expenses this month"
-        />
-
-        <div className="flex gap-2">
-          <StatPill label="Income" value="3,000 SAR" variant="income" />
-          <StatPill label="Expenses" value="1,550 SAR" variant="expense" />
-        </div>
+      <main className="flex-1 flex flex-col px-4 py-4 gap-4 pb-20">
+        <BalanceCard />
 
         <div className="flex gap-2">
           <Link
@@ -59,17 +37,25 @@ export default function dashboardPage() {
           </Link>
         </div>
 
-        <section className="mt-2">
+        <AnalyticsBar />
+
+        <section className="mt-1">
           <div className="flex justify-between items-center mb-1">
             <h2 className="text-sm font-semibold">Recent activity</h2>
             <span className="text-[11px] text-primary cursor-pointer">
-              View all
+              Last 5
             </span>
           </div>
-          <div className="bg-white rounded-xl border border-slate-200 px-3 py-2">
-            {recent.map((t, idx) => (
-              <TransactionItem key={idx} {...t} />
-            ))}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/70 dark:border-slate-800 px-3 py-2">
+            {recent.length === 0 ? (
+              <p className="text-[11px] text-muted py-2">
+                No transactions yet. Start by adding income or expense.
+              </p>
+            ) : (
+              recent.map((t) => (
+                <TransactionItem key={t.item.id} type={t.type} item={t.item as any} />
+              ))
+            )}
           </div>
         </section>
       </main>
@@ -77,3 +63,4 @@ export default function dashboardPage() {
     </>
   );
 }
+
